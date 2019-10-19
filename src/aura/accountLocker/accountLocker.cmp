@@ -1,0 +1,13 @@
+<aura:component controller="AccountController" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="box" type="Boolean" default="false"/>
+        <lightning:input
+                         aura:id="myToggle"
+                         name="myToggle"
+                         label="Locked?"
+                         type="toggle"
+                         messageToggleActive="Locked"
+                         messageToggleInactive="Unlocked"
+                         checked="{!v.box}"
+                         onchange="{!c.buttonClick}"/>-->
+</aura:component>
