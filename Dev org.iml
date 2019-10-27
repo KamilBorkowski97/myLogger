@@ -39,6 +39,10 @@
                             <option name="name" value="AccountTriggerHandlerTest" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ApexDebugLog" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
                         </list>
                       </option>
                       <option name="name" value="ApexClass" />
@@ -113,10 +117,6 @@
                     <MetadataType>
                       <option name="entries">
                         <list>
-                          <MetadataEntry>
-                            <option name="name" value="accountLocker" />
-                            <option name="selected" value="true" />
-                          </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="accountToggleLocker" />
                             <option name="selected" value="true" />
