@@ -9,12 +9,12 @@
  *
  * Revisions: NIL
 */
-global class ApexDebugLog{
+global class ApexDebugLog {
     /*
         A Virtual Class that Defines the
         Structure of a Log
     */
-    public virtual class Log{
+    public virtual class Log {
         public String Type;
         public String ApexClass;
         public String Method;
@@ -28,8 +28,8 @@ global class ApexDebugLog{
         A Class that Extends the Virtual Class - Log
         to define a log of type - Error
     */
-    public class Error extends Log{
-        public Error(String cls, String routine, String recId, Exception ex){
+    public class Error extends Log {
+        public Error(String cls, String routine, String recId, Exception ex) {
             this.Type = 'Error';
             this.ApexClass = cls;
             this.Method = routine;
@@ -37,14 +37,22 @@ global class ApexDebugLog{
             this.Message = ex.getMessage();
             this.StackTrace = ex.getStackTraceString();
         }
+        public Error(String cls, String routine, String recId, String exMessage, String exStackTrace) {
+            this.Type = 'Error';
+            this.ApexClass = cls;
+            this.Method = routine;
+            this.RecordId = recId;
+            this.Message = exMessage;
+            this.StackTrace = exStackTrace;
+        }
     }
 
     /*
         A Class that Extends the Virtual Class - Log
         to define a log of type - Information
     */
-    public class Information extends Log{
-        public Information(String cls, String routine, String recId, String msg){
+    public class Information extends Log {
+        public Information(String cls, String routine, String recId, String msg) {
             this.Type = 'Information';
             this.ApexClass = cls;
             this.Method = routine;
@@ -60,35 +68,32 @@ global class ApexDebugLog{
         the Apex Debug Log object stating the Error
         or Information.
     */
-    public void createLog(Log logToCreate){
-        try{
+    public void createLog(Log logToCreate) {
+        try {
             /*
                 Ensure that we're well within the Governor Limits.
                 The creation of the Log shouldn't disturb the execution
                 of that Apex Class that utilizes this method to
                 create a log.
             */
-            if(
+            if (
                     (Limits.getDMLRows() < Limits.getLimitDMLRows()) &&
                             (Limits.getDMLStatements() < Limits.getLimitDMLStatements())
-                    )
-            {
+                    ) {
                 ApexDebugLog__c apexDebuglog = new ApexDebugLog__c(
-                        Type__c         = logToCreate.Type,
-                        Apex_Class__c   = logToCreate.ApexClass,
-                        Method__c       = logToCreate.Method,
-                        Record_Id_Date__c    = logToCreate.RecordId,
-                        Message__c      = logToCreate.Message,
-                        Stack_Trace__c  = logToCreate.StackTrace
+                        Type__c = logToCreate.Type,
+                        Apex_Class__c = logToCreate.ApexClass,
+                        Method__c = logToCreate.Method,
+                        Record_Id_Date__c = logToCreate.RecordId,
+                        Message__c = logToCreate.Message,
+                        Stack_Trace__c = logToCreate.StackTrace
                 );
 
                 Database.insert(apexDebuglog, FALSE);
-            }
-            else{
+            } else {
                 System.debug('The Governor Limits have already been exhausted and hence failed to create a Log!');
             }
-        }
-        catch(DMLException ex){
+        } catch (DMLException ex) {
             System.debug('Something fatal has occurred and hence failed to create a Log! Error:' + ex.getMessage());
         }
     }
@@ -99,8 +104,8 @@ global class ApexDebugLog{
         Custom Object.
     */
     webService
-    static void createLog(String log){
-        try{
+    static void createLog(String log) {
+        try {
             /*
                 Expects a JSON of the form -
                 {
@@ -114,11 +119,10 @@ global class ApexDebugLog{
             */
 
             /*Deserialize the same to create an instance of the virtual class - ApexDebugLog.Log*/
-            ApexDebugLog.Log logToCreate = (ApexDebugLog.Log)JSON.deserialize(log, ApexDebugLog.Log.class);
+            ApexDebugLog.Log logToCreate = (ApexDebugLog.Log) JSON.deserialize(log, ApexDebugLog.Log.class);
 
             new ApexDebugLog().createLog(logToCreate);
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.debug('Something fatal has occurred and hence failed to create a Log! Error:' + ex.getMessage());
         }
     }

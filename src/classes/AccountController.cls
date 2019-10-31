@@ -1,37 +1,26 @@
 /**
- * Created by user on 11.10.2019.
+ * Created by Kamil on 11.10.2019.
  */
-
 public without sharing class AccountController {
 
     @AuraEnabled
     public static Account updateAccount2(Account acc) {
+
+        Logger_level__mdt logger_level = [SELECT Level__c FROM Logger_level__mdt WHERE Label = 'MainLoggerLevel'];
+
         try {
-            System.debug('[myLogger][verbosed] trying to lock account' + acc.Name + ' ' + acc.Id);
-            new ApexDebugLog().createLog(new ApexDebugLog.Information(
-               'AccountController',
-                    'updateAccount',
-                    acc.Id,
-                    'trying to lock account'
-            ));
+
             update acc;
+
+            if (logger_level.Level__c == 'verbose')
+                LoggerTransactions.saveLogVerbose('AccountController', 'updateAccount2', acc.Id, 'trying to lock account');
+
         } catch (DmlException e) {
-            System.debug('[myLogger][error/exception] dml exception ' + e.getStackTraceString() + ' ' + e.getMessage());
-            new ApexDebugLog().createLog(new ApexDebugLog.Error(
-                    'AccountController',
-                    'updateAccount',
-                    acc.Id,
-                    e
-            )
-            );
+            if (logger_level.Level__c != 'off')
+                LoggerTransactions.saveLogException('AccountController', 'updateAccount2', acc.Id, e.getMessage(), e.getStackTraceString());
         } catch (Exception e) {
-            System.debug('[myLogger][error/exception] generic exception ' + e.getStackTraceString() + ' ' + e.getMessage());
-            new ApexDebugLog().createLog(new ApexDebugLog.Error(
-                    'AccountController',
-                    'updateAccount',
-                    acc.Id,
-                    e
-            ));
+            if (logger_level.Level__c != 'off')
+                LoggerTransactions.saveLogException('AccountController', 'updateAccount2', acc.Id, e.getMessage(), e.getStackTraceString());
         }
         return acc;
     }

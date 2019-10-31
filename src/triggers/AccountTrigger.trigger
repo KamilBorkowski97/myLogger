@@ -1,5 +1,5 @@
 /**
- * Created by user on 16.10.2019.
+ * Created by Kamil on 16.10.2019.
  */
 
 trigger AccountTrigger on Account (before update) {

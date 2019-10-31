@@ -1,5 +1,5 @@
 /**
- * Created by user on 16.10.2019.
+ * Created by Kamil on 16.10.2019.
  */
 
 public with sharing class AccountTriggerHandler {
