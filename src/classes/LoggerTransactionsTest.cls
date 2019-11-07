@@ -16,6 +16,8 @@ private with sharing class LoggerTransactionsTest {
 
         Exception e = new DmlException();
 
+        LoggerConfiguration.setErrorLoggingLevelForTesting(LoggerConfiguration.LoggingLevel.Error);
+
         Test.startTest();
         LoggerTransactions.saveLogException(className, methodName, acc.Id, e.getMessage(), e.getStackTraceString());
         Test.stopTest();
@@ -34,6 +36,8 @@ private with sharing class LoggerTransactionsTest {
         insert acc;
 
         String msg = 'Trying to lock an account';
+
+        LoggerConfiguration.setErrorLoggingLevelForTesting(LoggerConfiguration.LoggingLevel.Verbose);
 
         Test.startTest();
         LoggerTransactions.saveLogVerbose(className, methodName, acc.Id, msg);

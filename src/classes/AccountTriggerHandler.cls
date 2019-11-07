@@ -4,6 +4,14 @@
 
 public with sharing class AccountTriggerHandler {
 
+    /***********
+     *
+     *
+     *  1st solution - worst
+     *
+     *
+     */
+
     public static void preventFromLockingAccountWithOpenOpportunities(List<Account> accList) {
 
         List<Opportunity> oppList = [
@@ -34,8 +42,7 @@ public with sharing class AccountTriggerHandler {
     }
 
     private static Boolean checkIfAccountIdMatchesToOppId(Account acc, Opportunity opp) {
-        if (acc.Id == opp.AccountId)
-            return true; else return false;
+        return acc.Id == opp.AccountId;
     }
 
     private static Boolean checkAccountLockStatus(Account acc) {
@@ -45,7 +52,7 @@ public with sharing class AccountTriggerHandler {
 
     /******************************************************************************
     *
-    *       2nd solution
+    *       2nd solution - better
     *
     *
     * */

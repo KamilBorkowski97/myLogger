@@ -9,7 +9,7 @@
  *
  * Revisions: NIL
 */
-global class ApexDebugLog {
+global without sharing class ApexDebugLog {
     /*
         A Virtual Class that Defines the
         Structure of a Log
@@ -89,7 +89,12 @@ global class ApexDebugLog {
                         Stack_Trace__c = logToCreate.StackTrace
                 );
 
-                Database.insert(apexDebuglog, FALSE);
+                if (LoggerConfiguration.mainLoggerLevel.name() == 'Off') {
+                    return;
+                }else if(LoggerConfiguration.mainLoggerLevel.name() == 'Error' && apexDebuglog.Type__c == 'Error'){
+                    Database.insert(apexDebuglog, FALSE);
+                }else if(LoggerConfiguration.mainLoggerLevel.name() == 'Verbose')
+                    Database.insert(apexDebuglog, FALSE);
             } else {
                 System.debug('The Governor Limits have already been exhausted and hence failed to create a Log!');
             }

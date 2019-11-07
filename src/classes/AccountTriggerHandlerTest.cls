@@ -5,6 +5,8 @@
 @isTest
 private class AccountTriggerHandlerTest {
 
+    private static final String cantLockMsg = 'Can not lock';
+
     @isTest
     private static void happyFlow() {
 
@@ -76,7 +78,7 @@ private class AccountTriggerHandlerTest {
             update accList;
         } catch (DmlException e) {
             //then
-            Boolean expectedExceptionThrown = e.getMessage().contains('Can not lock');
+            Boolean expectedExceptionThrown = e.getMessage().contains(cantLockMsg);
             System.assertEquals(expectedExceptionThrown, true);
         }
 
@@ -129,13 +131,14 @@ private class AccountTriggerHandlerTest {
 
         update oppList;
 
-        LoggerConfiguration.mainLoggerLevel = LoggerConfiguration.LoggingLevel.Verbose;
-
         //when (dml operations)
+
+        LoggerConfiguration.setErrorLoggingLevelForTesting(LoggerConfiguration.LoggingLevel.Verbose);
+
         try {
             update accList;
         } catch (DmlException e) {
-            Boolean expectedExceptionThrown = e.getMessage().contains('Can not lock');
+            Boolean expectedExceptionThrown = e.getMessage().contains(cantLockMsg);
             System.assertEquals(expectedExceptionThrown, true);
         }
 
@@ -147,6 +150,8 @@ private class AccountTriggerHandlerTest {
         }
 
         Test.stopTest();
+
+        System.assertEquals(4, [SELECT COUNT() FROM ApexDebugLog__c WHERE Type__c = 'Error' OR Type__c = 'Information']);
     }
 
     @isTest
@@ -161,13 +166,13 @@ private class AccountTriggerHandlerTest {
 
         update oppList;
 
-        LoggerConfiguration.mainLoggerLevel = LoggerConfiguration.LoggingLevel.Error;
+        LoggerConfiguration.setErrorLoggingLevelForTesting(LoggerConfiguration.LoggingLevel.Error);
 
         //when (dml operations)
         try {
             update accList;
         } catch (DmlException e) {
-            Boolean expectedExceptionThrown = e.getMessage().contains('Can not lock');
+            Boolean expectedExceptionThrown = e.getMessage().contains(cantLockMsg);
             System.assertEquals(expectedExceptionThrown, true);
         }
 
@@ -179,14 +184,12 @@ private class AccountTriggerHandlerTest {
         }
 
         Test.stopTest();
+
+        System.assertEquals(1, [SELECT COUNT() FROM ApexDebugLog__c WHERE Type__c = 'Error' OR Type__c = 'Information']);
     }
 
     @isTest
-    private static void testLoggerLevel() {
-        // test go
-        // test scenario: Depends on the logging level we want to verify that relevant informations have been logged
-
-        //given: Account list, Opportunity list
+    private static void testOffLoggerLevel() {
         List<Account> accList = generateAccounts();
         List<Opportunity> oppList = generateOpportunities();
 
@@ -195,16 +198,15 @@ private class AccountTriggerHandlerTest {
 
         matchOpportunityWithAccounts(oppList, accList);
 
-        update oppList; //end of given
+        update oppList;
 
-        // do not required above configuration becouse of default value
-        //LoggerConfiguration.mainLoggerLevel = LoggerConfiguration.LoggingLevel.Off;
+        LoggerConfiguration.setErrorLoggingLevelForTesting(LoggerConfiguration.LoggingLevel.Off);
 
         //when (dml operations)
         try {
             update accList;
         } catch (DmlException e) {
-            Boolean expectedExceptionThrown = e.getMessage().contains('Can not lock');
+            Boolean expectedExceptionThrown = e.getMessage().contains(cantLockMsg);
             System.assertEquals(expectedExceptionThrown, true);
         }
 
@@ -216,25 +218,8 @@ private class AccountTriggerHandlerTest {
         }
 
         Test.stopTest();
-        //then relevant information is locked
-        // refactor -> extract method
-        /*List<Logger_level__mdt> customMetadataLogger_level = [SELECT Level__c FROM Logger_level__mdt WHERE Label = 'MainLoggerLevel'];
-        String level = customMetadataLogger_level.get(0).Level__c;
-        switch on level {
-            when 'off' {
-                Integer count = database.countQuery('select count() from ApexDebugLog__c');
-                System.assertEquals(0, count);
-            }
-            when 'error' {
-                Integer count = [SELECT COUNT() FROM ApexDebugLog__c WHERE Type__c = 'Error'];
-                System.assertEquals(1, count);
-            }
-            when 'verbosed' {
-                Integer count = [SELECT COUNT() FROM ApexDebugLog__c WHERE Type__c = 'Information'];
-                System.assertEquals(4, count);
-            }
 
-        }*/
+        System.assertEquals(0, [SELECT COUNT() FROM ApexDebugLog__c WHERE Type__c = 'Error' OR Type__c = 'Information']);
     }
 
     private static void matchOpportunityWithAccounts(List<Opportunity> oppList, List<Account> accList) {
@@ -242,4 +227,5 @@ private class AccountTriggerHandlerTest {
             oppList.get(i).AccountId = accList.get(i).Id;
         }
     }
+
 }

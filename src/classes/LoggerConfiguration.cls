@@ -5,12 +5,12 @@
 public with sharing class LoggerConfiguration {
 
     @testVisible
-    ENUM LoggingLevel {
+    public ENUM LoggingLevel {
         Verbose, Error, Off
     }
 
     @testVisible
-    static LoggingLevel mainLoggerLevel = LoggingLevel.Off;
+    public static LoggingLevel mainLoggerLevel = LoggingLevel.Off;
 
     @testVisible
     static void getMainLoggerLevelFromCustomMetadata() {
